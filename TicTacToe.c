@@ -151,6 +151,7 @@ int main(int argc, char *argv[]) {
 				while(msgd == false)
 				{
 					//choice = strtol(esp,NULL,10);
+					//this is here to prevent infinite loop while player 1 makes a choice
 				}
 				choice = strtol(esp,NULL,10);
                 
@@ -160,6 +161,7 @@ int main(int argc, char *argv[]) {
                     {
                         square[choice] = 'X';
                         printBoard();
+						publish(client, TOPIC, esp);
                         valid = true;
 						msgd = false;
                     }
