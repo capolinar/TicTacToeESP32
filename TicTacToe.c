@@ -35,6 +35,24 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 //setup for mqtt
 
 //setup for tic tac toe game
+char square[10] = { '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' }; //the tictactoe board
+//function to print board, used after every move made my a player
+void printBoard()
+{
+    //system("cls");
+    printf("\n\n\tTic Tac Toe\n\n");
+
+    printf("Player 1 is X-----Player 2 is O \n\n\n");
+
+
+    printf("+-----------+\n");
+    printf("| %c | %c | %c |\n", square[1], square[2], square[3]);
+    printf("+-----------+\n");
+    printf("| %c | %c | %c |\n", square[4], square[5], square[6]);
+    printf("+-----------+\n");
+    printf("| %c | %c | %c |\n", square[7], square[8], square[9]);
+    printf("+-----------+\n");
+}
 
 //main
 
