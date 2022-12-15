@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <Keypad.h>
 
 // WiFi
 const char *ssid = "AplnrWifi"; // Enter your WiFi name
@@ -14,6 +15,19 @@ const int mqtt_port = 1883;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+//keypad keys
+char keys[4][4] = {
+ {'1', '2', '3', 'A'},
+ {'4', '5', '6', 'B'},
+ {'7', '8', '9', 'C'},
+ {'*', '0', '#', 'D'}
+};
+byte rowPins[4] = {14, 27, 26, 25}; // connect to the row pinouts of the keypad
+byte colPins[4] = {13, 21, 22, 23}; // connect to the column pinouts of the keypad
+// initialize an instance of class NewKeypad
+Keypad myKeypad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 4);
+
 
 void setup() {
  // Set software serial baud to 115200;
@@ -57,5 +71,13 @@ void callback(char *topic, byte *payload, unsigned int length) {
 }
 
 void loop() {
+   // Get the character input
+ char keyPressed = myKeypad.getKey();
+ String str = String(keyPressed);
+ if (keyPressed) {
+   const char *c = str.c_str();
+ client.publish(topic, c);
+ }
+ //loop for mqtt
  client.loop();
 }
