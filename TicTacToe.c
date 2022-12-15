@@ -116,6 +116,28 @@ int main(int argc, char *argv[]) {
     // subscribe topic
     MQTTClient_subscribe(client, TOPIC, QOS);
     char payload[16];
+////////////////////////////////////////////////End of MQTT main items
+
+
+/////////////////////////////////////////////////Start of tictactoe
+//prompt user for game they wish to play
+    printf("Welcome to Tic Tac Toe! \n"); 
+
+    printf("Make sure to enter a number between 1 and 9 that correspond to these spaces:\n\n");
+    printf("+-----------+\n");
+    printf("| 1 | 2 | 3 | \n");
+    printf("+-----------+\n");
+    printf("| 4 | 5 | 6 | \n");
+    printf("+-----------+\n");
+    printf("| 7 | 8 | 9 | \n");
+    printf("+-----------+\n\n");
+
+    printf("1---ESP32 vs 2---Person or Script \n \n");
+
+
+
+
+
 	
     for (int i = 0; i < 100; i += 1) {
         // publish message to broker
