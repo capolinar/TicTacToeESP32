@@ -45,7 +45,7 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 //setup for tic tac toe game
 char square[10] = { '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' }; //the tictactoe board
 //function to print board, used after every move made my a player
-void printBoard()
+void printBoard(MQTTClient c)
 {
     //system("cls");
     printf("\n\n\tTic Tac Toe\n\n");
@@ -60,6 +60,10 @@ void printBoard()
     printf("+-----------+\n");
     printf("| %c | %c | %c |\n", square[7], square[8], square[9]);
     printf("+-----------+\n");
+	
+
+	char *status = square;
+	publish(c, TOPIC, status);
 }
 
 int win() //function that returns 1 if game is over, -1 if in progress, and 0 if over and no result(TIE)
@@ -138,7 +142,7 @@ int main(int argc, char *argv[]) {
 
     printf("1---ESP32 vs 2---Person or Script \n \n");
 
-	printBoard();
+	printBoard(client);
 
 	int w = win();//w is win status
 	 while(w == -1)//keeps loop while game is in progress
@@ -147,6 +151,7 @@ int main(int argc, char *argv[]) {
             while(!valid)
             {
                 printf("Player 1: make your move\n\n"); //player1 prompt
+				msgd = false;
 				int choice;
 				while(msgd == false)
 				{
@@ -160,8 +165,7 @@ int main(int argc, char *argv[]) {
                     if(square[choice] == ' ')
                     {
                         square[choice] = 'X';
-                        printBoard();
-						publish(client, TOPIC, esp);
+                        printBoard(client);
                         valid = true;
 						msgd = false;
                     }
@@ -203,7 +207,7 @@ int main(int argc, char *argv[]) {
                     if(square[choice] == ' ')
                     {
                         square[choice] = 'O';
-                        printBoard();
+                        printBoard(client);
                         valid = true;
                     }
                     else if(square[choice] != ' ')
