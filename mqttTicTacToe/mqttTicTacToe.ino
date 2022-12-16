@@ -71,15 +71,16 @@ void setup() {
 }
 
 
-byte *board; //all received messages should only be board updates 
-
+String board = "0000000000000000000000000"; //all received messages should only be board updates 
+//this contains 24 characters representing the 3 8bit columns for the matrix
 //callback for messages to arduino
 void callback(char *topic, byte *payload, unsigned int length) {
  Serial.print("Message arrived in topic: ");
  Serial.println(topic);
  Serial.print("Message:");
- for (int i = 0; i < 9; i++) {
+ for (int i = 0; i < length; i++) {
      Serial.print((char) payload[i]);
+     board[i] = (char) payload[i];
  }
  Serial.println();
  Serial.println("-----------------------");
@@ -119,6 +120,18 @@ void loop() {
   int col8 = 0x00;//right col of board
   int col6= 0x00;//middle
   int col4= 0x00;//left
+  String firstCol = board.substring(0,9);//first 8 digits
+  String secCol = board.substring(9,17);
+  String thiCol = board.substring(17,25);
+  int c1 = firstCol.toInt();
+  int c2 = secCol.toInt();
+  int c3 = thiCol.toInt();
+  col8 = c1;
+  col6 = c2;
+  col4 = c3;
+
+  Serial.println(board);
+
   for (int j = 0; j < 500; j++ ) //repeat image 500 times so it displays
   {
      cols = 0x01;//first column selected
@@ -136,6 +149,7 @@ void loop() {
      matrixColsVal(~cols); // select this column
      delay(1); // display them for a period of time
      matrixRowsVal(0x00); // clear the data of this column
+     cols <<= 2;
   }
 
  
