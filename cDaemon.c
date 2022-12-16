@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-
+#include <stdbool.h>
 #include <windows.h>
 #include "MQTTClient.h"
 
@@ -15,6 +15,31 @@
 #define QOS         1
 #define TIMEOUT     100000L
 
+
+void publish(MQTTClient client, char *topic, char *payload) {
+    MQTTClient_message message = MQTTClient_message_initializer;
+    message.payload = payload;
+    message.payloadlen = strlen(payload);
+    message.qos = QOS;
+    message.retained = 0;
+    MQTTClient_deliveryToken token;
+    MQTTClient_publishMessage(client, topic, &message, &token);
+    MQTTClient_waitForCompletion(client, token, TIMEOUT);
+    printf("Send `%s` to topic `%s` \n", payload, TOPIC);
+}
+
+
+bool msgd = false;
+
+int on_message(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+    char *payload = message->payload;
+    printf("Received `%s` from `%s` topic \n", payload, topicName);
+	msgd = true;
+
+    MQTTClient_freeMessage(&message);
+    MQTTClient_free(topicName);
+    return 1;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -144,7 +169,7 @@ int main(int argc, char *argv[]) {
 
 	FILE* ptr;
     char str[50];
-    ptr = fopen("espStat.txt", "a+");
+    ptr = fopen("espStat.txt", "w+");
  
     if (NULL == ptr) {
         printf("file can't be opened \n");
@@ -152,9 +177,15 @@ int main(int argc, char *argv[]) {
  
  
     while (fgets(str, 50, ptr) != NULL) {
-        if(str == "Don't run daemon")
+        if(msgd)
 		{
-
+			if(str == "Don't run daemon")
+			{
+				//should cancel script as is
+			}
+			else{
+				fprintf(ptr,"Script can run");
+			}
 		}
     }
 
