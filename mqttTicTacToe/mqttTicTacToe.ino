@@ -13,6 +13,12 @@ const char *mqtt_username = "emqx";
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
+//LED Matrix
+int latchPin = 2;          // Pin connected to ST_CP of 74HC595（Pin12）
+int clockPin = 4;          // Pin connected to SH_CP of 74HC595（Pin11）
+int dataPin = 15;          // Pin connected to DS of 74HC595（Pin14）
+
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -30,6 +36,11 @@ Keypad myKeypad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 4);
 
 
 void setup() {
+
+    // set pins to output for LED Matrix
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
  // Set software serial baud to 115200;
  Serial.begin(115200);
  // connecting to a WiFi network
@@ -59,15 +70,38 @@ void setup() {
  client.subscribe(topic);
 }
 
+
+byte *board; //all received messages should only be board updates 
+
+//callback for messages to arduino
 void callback(char *topic, byte *payload, unsigned int length) {
  Serial.print("Message arrived in topic: ");
  Serial.println(topic);
  Serial.print("Message:");
- for (int i = 0; i < length; i++) {
+ for (int i = 0; i < 9; i++) {
      Serial.print((char) payload[i]);
  }
  Serial.println();
  Serial.println("-----------------------");
+}
+
+//functions to read rows and columns of LED Matrix
+void matrixRowsVal(int value) {
+  // make latchPin output low level
+  digitalWrite(latchPin, LOW);
+  // Send serial data to 74HC595
+  shiftOut(dataPin, clockPin, LSBFIRST, value);
+  // make latchPin output high level, then 74HC595 will update the data to parallel output
+  digitalWrite(latchPin, HIGH);
+}
+
+void matrixColsVal(int value) {
+  // make latchPin output low level
+  digitalWrite(latchPin, LOW);
+  // Send serial data to 74HC595
+  shiftOut(dataPin, clockPin, MSBFIRST, value);
+  // make latchPin output high level, then 74HC595 will update the data to parallel output
+  digitalWrite(latchPin, HIGH);
 }
 
 void loop() {
@@ -78,6 +112,37 @@ void loop() {
    const char *c = str.c_str();
  client.publish(topic, c);
  }
+
+//LED Matrix LOOP
+  int cols;
+  //blank board at start of game
+  int col8 = 0x00;//right col of board
+  int col6= 0x00;//middle
+  int col4= 0x00;//left
+  for (int j = 0; j < 500; j++ ) //repeat image 500 times so it displays
+  {
+     cols = 0x01;//first column selected
+     matrixRowsVal(col8);
+     matrixColsVal(~cols); // select this column
+     delay(1); // display them for a period of time
+     matrixRowsVal(0x00); // clear the data of this column
+     cols <<= 2; // shift "cols" 1 bit left to select the next column
+     matrixRowsVal(col6);
+     matrixColsVal(~cols); // select this column
+     delay(1); // display them for a period of time
+     matrixRowsVal(0x00); // clear the data of this column
+     cols <<= 2; // shift "cols" 1 bit left to select the next column
+     matrixRowsVal(col4);
+     matrixColsVal(~cols); // select this column
+     delay(1); // display them for a period of time
+     matrixRowsVal(0x00); // clear the data of this column
+  }
+
+ 
  //loop for mqtt
  client.loop();
+
+
 }
+
+
