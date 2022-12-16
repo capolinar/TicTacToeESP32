@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
 
 /////////////////////////////////////////////////Start of tictactoe
 //wait until ESP sends number to start game
-int gameStart = 1;
+//int gameStart = 1;
 while(msgd == false)
 {
 //do nothing until input;
@@ -208,12 +208,14 @@ msgd = false;
                 printf("Player 1: make your move\n\n"); //player1 prompt
 				msgd = false;
 				int choice;
+
 				while(msgd == false)
 				{
 					//choice = strtol(esp,NULL,10);
-					//this is here to prevent infinite loop while player 1 makes a choice
+					choice = strtol(esp,NULL,10);
+					//this is here to start an infinite loop while player 1 makes a choice
 				}
-				choice = strtol(esp,NULL,10);
+				
                 
                  if(choice > 0 && choice < 10 && msgd == true)
                  {
@@ -235,6 +237,7 @@ msgd = false;
                  else
                  {
                     printf("Number is not between 1 and 9, please enter again\n");
+					msgd = false;
                  }
             
 
