@@ -44,6 +44,12 @@ int on_message(void *context, char *topicName, int topicLen, MQTTClient_message 
 
 //setup for tic tac toe game
 char square[10] = { '0', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' }; //the tictactoe board
+
+	//binary for LED Matrix ESP32
+	char esp32Board[25] = { '0', '0', '0', '0', '0', '0', '0', '0',
+							'0', '0', '0', '0', '0', '0', '0', '0',
+							'0', '0', '0', '0', '0', '0', '0', '0'};
+
 //function to print board, used after every move made my a player
 void printBoard(MQTTClient c)
 {
@@ -61,8 +67,50 @@ void printBoard(MQTTClient c)
     printf("| %c | %c | %c |\n", square[7], square[8], square[9]);
     printf("+-----------+\n");
 	
+	//first column binary info
+	for(int i = 1; i < 10; i += 3)
+	{
+		if(square[i] == 'X')
+		{
+			esp32Board[i] = '1'; //1 led on means X
+		}
+		else if(square[i] == 'O')
+		{
+			esp32Board[i] = '1';
+			esp32Board[i-1] = '1'; //2 leds on means O
+		}
+	}
+	//second column binary info
+	int j = 6; //starting esp32Board position for 2nd column binary
+	for(int i = 2; i < 10; i += 3)
+	{
+		j += 3;
+		if(square[i] == 'X')
+		{
+			esp32Board[j] = '1'; //1 led on means X
+		}
+		else if(square[i] == 'O')
+		{
+			esp32Board[j] = '1';
+			esp32Board[j-1] = '1'; //2 leds on means O
+		}
+	}
+	j = 15; //starting esp32Board position for 3rd column binary
+	for(int i = 3; i < 10; i += 3)
+	{
+		j += 3;
+		if(square[i] == 'X')
+		{
+			esp32Board[j] = '1'; //1 led on means X
+		}
+		else if(square[i] == 'O')
+		{
+			esp32Board[j] = '1';
+			esp32Board[j-1] = '1'; //2 leds on means O
+		}
+	}
 
-	char *status = square;
+	char *status = esp32Board;
 	publish(c, TOPIC, status);
 }
 
@@ -128,7 +176,14 @@ int main(int argc, char *argv[]) {
 
 
 /////////////////////////////////////////////////Start of tictactoe
-//prompt user for game they wish to play
+//wait until ESP sends number to start game
+int gameStart = 1;
+while(msgd == false)
+{
+//do nothing until input;
+}
+msgd = false;
+
     printf("Welcome to Tic Tac Toe! \n"); 
 
     printf("Make sure to enter a number between 1 and 9 that correspond to these spaces:\n\n");
