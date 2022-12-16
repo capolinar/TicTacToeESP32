@@ -175,6 +175,11 @@ int main(int argc, char *argv[]) {
 ////////////////////////////////////////////////End of MQTT main items
 
 
+
+
+char *filename = "espStat.txt";//filename to update daemon
+
+
 /////////////////////////////////////////////////Start of tictactoe
 //wait until ESP sends number to start game
 //int gameStart = 1;
@@ -182,7 +187,24 @@ while(msgd == false)
 {
 //do nothing until input;
 }
+int count = 0;//once this reaches 2, it'll update the txt file for the daemon to read
 msgd = false;
+if(msgd)
+{
+	// open the file for writing
+    		FILE *fp = fopen(filename, "w");
+    		if (fp == NULL)
+    		{
+    		    printf("Error opening the file %s", filename);
+   		     	return -1;
+   			 }
+   			 // write to the text file
+   			 for (int i = 0; i < 10; i++)
+        		printf("Timeout for 30 secs");
+
+   			 // close the file
+   			 fclose(fp);
+}
 
     printf("Welcome to Tic Tac Toe! \n"); 
 
@@ -225,6 +247,7 @@ msgd = false;
                         printBoard(client);
                         valid = true;
 						msgd = false;
+						count++;
                     }
                     else if(square[choice] != ' ')
                     {
@@ -281,6 +304,21 @@ msgd = false;
                  }
 
             }
+			
+
+   			 // open the file for writing
+    		FILE *fp = fopen(filename, "w");
+    		if (fp == NULL)
+    		{
+    		    printf("Error opening the file %s", filename);
+   		     	return -1;
+   			 }
+   			 // write to the text file
+   			 for (int i = 0; i < 10; i++)
+        		printf("Don't run daemon");
+
+   			 // close the file
+   			 fclose(fp);
             w = win();
             if(w == 1) //this updates win status, breaks loop if game is over
             {
